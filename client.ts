@@ -9,6 +9,11 @@ function connect(token: string) {
     'v': '1',
   });
   let socket = new WebSocket(ws_url);
+
+  socket.on('message', data => {
+    let msg = JSON.parse(data.toString());
+    console.log(msg);
+  });
 }
 
 connect(process.argv[2]);
