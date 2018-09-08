@@ -18,6 +18,9 @@ export class CWClient extends EventEmitter {
     super();
   }
 
+  /**
+   * Connect to the API's WebSocket to start emitting events.
+   */
   connect() {
     let ws_url = WS_URL + '?' + querystring.stringify({
       'access_token': this.token,
