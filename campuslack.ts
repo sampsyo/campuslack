@@ -1,6 +1,8 @@
 import { CWClient } from './cwclient';
 import fetch from 'node-fetch';
 
+const MAX_MESSAGE_LENGTH = 256;
+
 function forceEnv(key: string): string {
   let value = process.env[key];
   if (!value) {
@@ -38,7 +40,6 @@ async function main() {
   for (let group of groupList) {
     groups[group.id] = group;
   }
-  console.log(groups);
 
   // Load the users.
   let users = await client.get('network/users/connected');
@@ -55,12 +56,18 @@ async function main() {
       let url = `https://campuswire.com/c/${courseSlug}/feed/${post.slug}`;
       console.log(url);
 
+      // Truncate the message.
+      let body: string = post.body;
+      if (body.length > MAX_MESSAGE_LENGTH) {
+        body = body.slice(0, MAX_MESSAGE_LENGTH) + "…";
+      }
+
       // Create the Slack attachment.
       let attach: {[key: string]: any} = {
         fallback: `New ${post.type}: ${post.title}\n${url}`,
         title: post.title,
         title_link: url,
-        text: post.body,
+        text: body,
         ts: Date.parse(post.createdAt) / 1000,
         footer: group.name,
         footer_icon: group.photo,
