@@ -3,7 +3,7 @@ import { CWClient } from './cwclient';
 function forceEnv(key: string): string {
   let value = process.env[key];
   if (!value) {
-    throw "set ${key}";
+    throw `set ${key}`;
   }
   return value;
 }
@@ -17,10 +17,10 @@ client.connect();
 client.on('wall-post-created', data => {
   let post = data.post;
   if (post.group === cw_groupid && !post.draft) {
-    console.log(post.title);
-    console.log(post.group);
+    let url = `https://campuswire.com/c/???/feed/${post.slug}`;
+
+    console.log(`New ${post.type}: ${post.title}`);
+    console.log(url);
     console.log(post.body);
-    console.log(post.type);
-    console.log(post);
   }
 });
