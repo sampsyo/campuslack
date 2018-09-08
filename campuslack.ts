@@ -39,24 +39,37 @@ async function main() {
     groups[group.id] = group;
   }
 
+  // Load the users.
+  let users = await client.get('network/users/connected');
+
   client.connect();
 
   client.on('wall-post-created', data => {
     let post = data.post;
     if (post.group === cw_groupid && !post.draft) {
+      // Construct the link to the new post.
       let courseSlug = groups[cw_groupid].slug;
       let url = `https://campuswire.com/c/${courseSlug}/feed/${post.slug}`;
       console.log(url);
 
+      // Create the Slack attachment.
+      let attach: {[key: string]: any} = {
+        fallback: `New ${post.type}: ${post.title}\n${url}`,
+        title: post.title,
+        title_link: url,
+        text: post.body,
+      };
+
+      // Try to look up the author.
+      console.log(post);
+      let user = users[post.author];
+      if (user) {
+        attach['author_name'] = `${user.firstName} ${user.lastName}`;
+        attach['author_icon'] = user.photo;
+      }
+
       // Post a message to Slack.
-      slackHook(slack_hookurl, {
-        attachments: [{
-          fallback: `New ${post.type}: ${post.title}\n${url}`,
-          title: post.title,
-          title_link: url,
-          text: post.body,
-        }],
-      });
+      slackHook(slack_hookurl, { attachments: [attach] });
     }
   });
 }
