@@ -16,4 +16,8 @@ function connect(token: string) {
   });
 }
 
-connect(process.argv[2]);
+let cw_token = process.env['CAMPUSWIRE_TOKEN'];
+if (!cw_token) {
+  throw "set CAMPUSWIRE_TOKEN";
+}
+connect(cw_token);
