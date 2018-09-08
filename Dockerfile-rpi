@@ -1,0 +1,12 @@
+FROM resin/raspberrypi3-node
+MAINTAINER Adrian Sampson <adrian@radbox.org>
+
+RUN npm install -g yarn
+
+ADD . /campuslack
+WORKDIR /campuslack
+
+RUN yarn
+RUN yarn run tsc
+
+CMD ["node", "build/campuslack.js"]
