@@ -46,16 +46,16 @@ async function main() {
     if (post.group === cw_groupid && !post.draft) {
       let courseSlug = groups[cw_groupid].slug;
       let url = `https://campuswire.com/c/${courseSlug}/feed/${post.slug}`;
+      console.log(url);
 
-      // Craft a message to post to Slack.
-      let message = `New ${post.type}: ${post.title}\n`;
-      message += url + '\n';
-      message += post.body;
-
-      // Send the message.
-      console.log(message);
+      // Post a message to Slack.
       slackHook(slack_hookurl, {
-        text: message,
+        attachments: [{
+          fallback: `New ${post.type}: ${post.title}\n${url}`,
+          title: post.title,
+          title_link: url,
+          text: post.body,
+        }],
       });
     }
   });
