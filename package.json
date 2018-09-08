@@ -1,7 +1,7 @@
 {
   "name": "cwclient",
   "version": "1.0.0",
-  "main": "build/client.js",
+  "main": "build/cwclient.js",
   "license": "MIT",
   "private": true,
   "devDependencies": {
