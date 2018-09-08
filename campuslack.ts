@@ -14,6 +14,10 @@ let cw_groupid = forceEnv('CAMPUSWIRE_GROUP');
 let client = new CWClient(cw_token);
 client.connect();
 
+client.get('user/groups').then(data => {
+  console.log(data);
+});
+
 client.on('wall-post-created', data => {
   let post = data.post;
   if (post.group === cw_groupid && !post.draft) {
