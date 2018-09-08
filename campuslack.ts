@@ -58,10 +58,10 @@ async function main() {
         title: post.title,
         title_link: url,
         text: post.body,
+        ts: Date.parse(post.createdAt) / 1000,
       };
 
       // Try to look up the author.
-      console.log(post);
       let user = users[post.author];
       if (user) {
         attach['author_name'] = `${user.firstName} ${user.lastName}`;
