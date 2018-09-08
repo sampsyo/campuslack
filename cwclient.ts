@@ -4,12 +4,12 @@ import { EventEmitter } from 'events';
 
 const WS_URL = 'wss://api.campuswire.com/v1/ws';
 
-interface CWEvent {
+export interface CWEvent {
   event: string;
   data: any;
 }
 
-class CWClient extends EventEmitter {
+export class CWClient extends EventEmitter {
   constructor(
     public token: string
   ) {
@@ -25,22 +25,7 @@ class CWClient extends EventEmitter {
   
     socket.on('message', data => {
       let event = JSON.parse(data.toString()) as CWEvent;
-      console.log(event);
-
-      if (event.event === 'message') {
-        this.emit('message', event.data);
-      }
+      this.emit(event.event, event.data);
     });
   }
 }
-
-let cw_token = process.env['CAMPUSWIRE_TOKEN'];
-if (!cw_token) {
-  throw "set CAMPUSWIRE_TOKEN";
-}
-let client = new CWClient(cw_token);
-client.on('message', data => {
-  console.log(data.groupId);
-  console.log(data.message.body);
-});
-client.connect();

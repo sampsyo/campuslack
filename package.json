@@ -1,7 +1,7 @@
 {
   "name": "cwclient",
   "version": "1.0.0",
-  "main": "build/cwclient.js",
+  "main": "build/campuslack.js",
   "license": "MIT",
   "private": true,
   "devDependencies": {
