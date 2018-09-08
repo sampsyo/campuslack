@@ -38,6 +38,7 @@ async function main() {
   for (let group of groupList) {
     groups[group.id] = group;
   }
+  console.log(groups);
 
   // Load the users.
   let users = await client.get('network/users/connected');
@@ -47,8 +48,10 @@ async function main() {
   client.on('wall-post-created', data => {
     let post = data.post;
     if (post.group === cw_groupid && !post.draft) {
+      let group = groups[cw_groupid];
+
       // Construct the link to the new post.
-      let courseSlug = groups[cw_groupid].slug;
+      let courseSlug = group.slug;
       let url = `https://campuswire.com/c/${courseSlug}/feed/${post.slug}`;
       console.log(url);
 
@@ -59,6 +62,8 @@ async function main() {
         title_link: url,
         text: post.body,
         ts: Date.parse(post.createdAt) / 1000,
+        footer: group.name,
+        footer_icon: group.photo,
       };
 
       // Try to look up the author.
