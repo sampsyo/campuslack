@@ -1,6 +1,6 @@
 import * as WebSocket from 'ws';
 import * as querystring from 'querystring';
-import fetch from 'node-fetch';
+import * as fetch from 'node-fetch';
 import { EventEmitter } from 'events';
 
 const WS_URL = 'wss://api.campuswire.com/v1/ws';
@@ -22,7 +22,7 @@ export class CWClient extends EventEmitter {
   /**
    * Connect to the API's WebSocket to start emitting events.
    */
-  connect() {
+  async connect() {
     let ws_url = WS_URL + '?' + querystring.stringify({
       'access_token': this.token,
       'v': '1',
@@ -56,15 +56,16 @@ export class CWClient extends EventEmitter {
   }
 
   /**
-   * Perform a GET request for the given path on the API and return
+   * Perform a request for the given path on the API and return
    * the (parsed) JSON result.
    */
-  async get(path: string) {
-    let res = await fetch(API_BASE + path, {
+  async get(path: string, options: fetch.RequestInit = {}) {
+    options = Object.assign({
       headers: {
         "Authorization": "Bearer " + this.token,
       },
-    });
+    }, options);
+    let res = await fetch.default(API_BASE + path, options);
     if (!res.ok) {
       throw res.statusText;
     }
