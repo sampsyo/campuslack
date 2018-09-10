@@ -14,7 +14,8 @@ export interface CWEvent {
 
 export class CWClient extends EventEmitter {
   constructor(
-    public token: string
+    public token: string,
+    public groupIds: string[] = [],
   ) {
     super();
   }
@@ -24,7 +25,6 @@ export class CWClient extends EventEmitter {
       method: 'PUT',
       body: '{}',
     });
-    console.log(res);
     this.token = res.token;
   }
 
@@ -32,6 +32,7 @@ export class CWClient extends EventEmitter {
    * Connect to the API's WebSocket to start emitting events.
    */
   async connect() {
+    // Get a new, updated authentication token for this session.
     await this.reauth();
 
     let ws_url = WS_URL + '?' + querystring.stringify({
@@ -40,8 +41,16 @@ export class CWClient extends EventEmitter {
     });
     let socket = new WebSocket(ws_url);
 
-    socket.on('open', () => {
+    socket.on('open', async () => {
       console.log("connected");
+
+      // A super weird quirk of the API is that we need to "subscribe" to
+      // detailed group notifications by requesting the post list. Otherwise,
+      // notifications for new and updated posts won't arrive.
+      for (let groupId of this.groupIds) {
+        await this.get(`group/${groupId}/posts?number=20`);
+      }
+      console.log("subscribed");
     });
 
     // Receive event messages.

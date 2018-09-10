@@ -32,7 +32,7 @@ async function main() {
   let cw_groupid = forceEnv('CAMPUSWIRE_GROUP');
   let slack_hookurl = forceEnv('SLACK_HOOK_URL');
 
-  let client = new CWClient(cw_token);
+  let client = new CWClient(cw_token, [cw_groupid]);
 
   // Load the available groups (i.e., classes).
   let groupList = await client.get('user/groups');
