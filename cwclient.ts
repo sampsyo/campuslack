@@ -19,10 +19,21 @@ export class CWClient extends EventEmitter {
     super();
   }
 
+  async reauth() {
+    let res = await this.get('auth/login', {
+      method: 'PUT',
+      body: '{}',
+    });
+    console.log(res);
+    this.token = res.token;
+  }
+
   /**
    * Connect to the API's WebSocket to start emitting events.
    */
   async connect() {
+    await this.reauth();
+
     let ws_url = WS_URL + '?' + querystring.stringify({
       'access_token': this.token,
       'v': '1',
@@ -63,6 +74,7 @@ export class CWClient extends EventEmitter {
     options = Object.assign({
       headers: {
         "Authorization": "Bearer " + this.token,
+        "Content-Type": "application/json",
       },
     }, options);
     let res = await fetch.default(API_BASE + path, options);
