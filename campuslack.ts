@@ -56,6 +56,7 @@ async function main() {
   client.on('wall-post-created', data => {
     let post = data.post;
     console.log(post);
+
     if (post.group === cw_groupid && !post.draft) {
       let group = groups[cw_groupid];
 
@@ -79,9 +80,13 @@ async function main() {
         ts: Date.parse(post.createdAt) / 1000,
         footer: group.name,
         footer_icon: group.photo,
-        fields: {
-          'Type': post.type,
-        },
+        fields: [
+          {
+            title: 'Type',
+            value: post.type,
+            short: true,
+          }
+        ],
       };
 
       // Try to look up the author.
@@ -94,11 +99,24 @@ async function main() {
       // Try to look up the category.
       let groupCats = categories[cw_groupid];
       if (groupCats && groupCats[post.categoryId]) {
-        let cat = groupCats[post.categoryId].title;
-        attach.fields['Category'] = cat;
+        attach.fields.push({
+          title: 'Category',
+          value: groupCats[post.categoryId].title,
+          short: true,
+        });
+      }
+
+      // Mark private posts as private.
+      if (post.visibility === 'moderator') {
+        attach.fields.push({
+          title: 'Visibility',
+          value: 'private',
+          short: true,
+        });
       }
 
       // Post a message to Slack.
+      console.log(attach);
       slackHook(slack_hookurl, { attachments: [attach] });
     }
   });
