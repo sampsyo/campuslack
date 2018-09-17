@@ -34,11 +34,18 @@ async function main() {
 
   let client = new CWClient(cw_token, [cw_groupid]);
 
-  // Load the available groups (i.e., classes).
+  // Load the available groups (i.e., classes) and their categories.
   let groupList = await client.get('user/groups');
   let groups: {[key: string]: any} = {};
+  let categories: {[key: string]: {[key: string]: any}} = {};
   for (let group of groupList) {
     groups[group.id] = group;
+    if (group.categories) {
+      categories[group.id] = {};
+      for (let cat of group.categories) {
+        categories[group.id][cat.id] = cat;
+      }
+    }
   }
 
   // Load the users.
@@ -48,6 +55,7 @@ async function main() {
 
   client.on('wall-post-created', data => {
     let post = data.post;
+    console.log(post);
     if (post.group === cw_groupid && !post.draft) {
       let group = groups[cw_groupid];
 
@@ -71,6 +79,9 @@ async function main() {
         ts: Date.parse(post.createdAt) / 1000,
         footer: group.name,
         footer_icon: group.photo,
+        fields: {
+          'Type': post.type,
+        },
       };
 
       // Try to look up the author.
@@ -78,6 +89,13 @@ async function main() {
       if (user) {
         attach['author_name'] = `${user.firstName} ${user.lastName}`;
         attach['author_icon'] = user.photo;
+      }
+
+      // Try to look up the category.
+      let groupCats = categories[cw_groupid];
+      if (groupCats && groupCats[post.categoryId]) {
+        let cat = groupCats[post.categoryId].title;
+        attach.fields['Category'] = cat;
       }
 
       // Post a message to Slack.
