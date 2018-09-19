@@ -55,6 +55,11 @@ async function main() {
 
   client.on('wall-post-created', data => {
     let post = data.post;
+    if (!post) {
+      console.log("post missing in data", data);
+      return;
+    }
+
     console.log(post);
 
     if (post.group === cw_groupid && !post.draft) {
