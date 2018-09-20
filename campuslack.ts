@@ -121,4 +121,8 @@ async function main() {
   });
 }
 
+// Unhandled rejections (i.e., any uncaught execption in async code) should
+// crash the node process.
+process.on('unhandledRejection', e => { throw e });
+
 main();
