@@ -68,11 +68,18 @@ export class CWClient extends EventEmitter {
     // Reconnect when disconnected.
     socket.on('close', (code, reason) => {
       console.log(`socket closed (${code}): ${reason}`);
-      setTimeout(() => {
-        console.log("reconnecting");
-        this.connect();
-      }, RECONNECT_INTERVAL);
+      this.reconnect();
     });
+  }
+
+  /**
+   * Wait for a while and then try reestablishing the connection.
+   */
+  reconnect() {
+    setTimeout(() => {
+      console.log("reconnecting");
+      this.connect();
+    }, RECONNECT_INTERVAL);
   }
 
   /**
