@@ -61,7 +61,7 @@ async function main() {
 
       // Construct the link to the new post.
       let courseSlug = group.slug;
-      let url = `https://campuswire.com/c/${courseSlug}/feed/${post.slug}`;
+      let url = `https://campuswire.com/c/${courseSlug}/feed/${post.number}`;
       console.log(url);
 
       // Truncate the message.
