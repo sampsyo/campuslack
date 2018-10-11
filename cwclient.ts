@@ -37,7 +37,7 @@ export class CWClient extends EventEmitter {
 
     let ws_url = WS_URL + '?' + querystring.stringify({
       'access_token': this.token,
-      'v': '2',
+      'v': '5',
     });
     let socket = new WebSocket(ws_url);
 
